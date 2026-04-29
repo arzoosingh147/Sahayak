@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { FiDownload } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiDownload, FiExternalLink, FiSearch } from 'react-icons/fi';
 import { FaBookOpen, FaHeartbeat, FaToolbox } from 'react-icons/fa';
 
 export default function Resources() {
@@ -11,14 +12,16 @@ export default function Resources() {
       title: 'Understanding Anxiety',
       description: 'An in-depth article about anxiety symptoms and how to manage them.',
       category: 'Articles',
-      icon: <FaBookOpen className="text-blue-500 text-2xl" />,
+      icon: <FaBookOpen />,
+      color: "text-blue-500",
       link: 'https://example.com/anxiety-article',
     },
     {
       title: 'Burnout Prevention Toolkit',
       description: 'Downloadable toolkit with stress-relief techniques and schedules.',
       category: 'Toolkits',
-      icon: <FaToolbox className="text-green-500 text-2xl" />,
+      icon: <FaToolbox />,
+      color: "text-emerald-500",
       downloadable: true,
       link: '/toolkits/burnout-prevention.pdf',
     },
@@ -26,113 +29,103 @@ export default function Resources() {
       title: 'Self-Care Basics',
       description: 'A gentle guide to start your self-care journey.',
       category: 'Self-care',
-      icon: <FaHeartbeat className="text-pink-500 text-2xl" />,
+      icon: <FaHeartbeat />,
+      color: "text-[#F1A6B4]",
       link: 'https://example.com/self-care-guide',
-    },
-    {
-      title: 'Coping with Depression',
-      description: 'A helpful article that explains common signs and coping mechanisms.',
-      category: 'Articles',
-      icon: <FaBookOpen className="text-blue-500 text-2xl" />,
-      link: 'https://example.com/depression-guide',
-    },
-    {
-      title: 'Breathing Exercises Toolkit',
-      description: 'A downloadable PDF with calming breathing exercises.',
-      category: 'Toolkits',
-      icon: <FaToolbox className="text-green-500 text-2xl" />,
-      downloadable: true,
-      link: '/toolkits/breathing-exercises.pdf',
-    },
-    {
-      title: 'Nighttime Self-Care Routine',
-      description: 'A simple bedtime routine for relaxation and better sleep.',
-      category: 'Self-care',
-      icon: <FaHeartbeat className="text-pink-500 text-2xl" />,
-      link: 'https://example.com/bedtime-selfcare',
     },
   ];
 
-  const filteredResources = resources.filter(resource => {
-    return (
-      (resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        resource.description.toLowerCase().includes(searchQuery.toLowerCase())) &&
-      (selectedCategory === 'All' || resource.category === selectedCategory)
-    );
-  });
+  const categories = ['All', 'Articles', 'Self-care', 'Toolkits'];
+
+  const filteredResources = resources.filter(res => 
+    (res.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+     res.description.toLowerCase().includes(searchQuery.toLowerCase())) &&
+    (selectedCategory === 'All' || res.category === selectedCategory)
+  );
 
   return (
-    <div className="min-h-screen bg-[#FFE4D7] pt-28 pb-16 px-6 text-center">
-      <h1 className="text-4xl font-bold text-black mb-4">Sahayak Resource Center</h1>
-      <p className="text-gray-600 mb-8 max-w-xl mx-auto">
-        Explore carefully curated guides, articles, and toolkits to support your mental well-being.
-      </p>
+    <div className="min-h-screen bg-[#FFE4D7] pt-32 pb-20 px-6 text-[#093832]">
+      <header className="max-w-3xl mx-auto text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold mb-4">Resource Center</h1>
+        <p className="text-lg opacity-75 leading-relaxed">
+          Carefully curated guides and toolkits to support your mental well-being journey.
+        </p>
+      </header>
 
-      {/* Search Bar */}
-      <div className="mb-6 max-w-md mx-auto">
-        <input
-          type="text"
-          placeholder="🔍 Search resources..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-3 border border-gray-300 rounded-lg text-lg shadow-sm"
-        />
-      </div>
-
-      {/* Category Filter */}
-      <div className="mb-10">
-        <label className="mr-2 text-xl text-black font-medium">Filter by Category:</label>
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="border px-4 py-2 rounded-lg text-lg shadow-sm"
-        >
-          <option>All</option>
-          <option>Articles</option>
-          <option>Self-care</option>
-          <option>Toolkits</option>
-        </select>
+      {/* Search & Filter Bar */}
+      <div className="max-w-5xl mx-auto mb-16 flex flex-col md:flex-row gap-6 items-center">
+        <div className="relative w-full md:flex-grow">
+          <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
+          <input
+            type="text"
+            placeholder="Search for articles, guides..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-12 pr-4 py-4 bg-white rounded-2xl shadow-sm outline-none focus:ring-2 ring-[#F1A6B4] transition-all"
+          />
+        </div>
+        
+        <div className="flex gap-2 bg-white/50 p-2 rounded-2xl backdrop-blur-sm border border-white">
+          {categories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setSelectedCategory(cat)}
+              className={`px-6 py-2 rounded-xl font-bold transition-all ${
+                selectedCategory === cat 
+                ? 'bg-[#093832] text-white shadow-md' 
+                : 'hover:bg-[#F1A6B4]/20'
+              }`}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Resources Grid */}
-      <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-2 gap-8">
-        {filteredResources.length === 0 ? (
-          <p className="text-gray-500">No resources found. Try adjusting your filters or search term.</p>
-        ) : (
-          filteredResources.map((resource, index) => (
-            <div
+      <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <AnimatePresence>
+          {filteredResources.map((res, index) => (
+            <motion.div
+              layout
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
               key={index}
-              className="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition-all duration-300 text-left relative"
+              className="bg-white p-8 rounded-[2.5rem] shadow-xl hover:shadow-2xl transition-all border-b-8 border-[#F1A6B4] flex flex-col text-left"
             >
-              <div className="flex items-center gap-3 mb-4">
-                {resource.icon}
-                <h3 className="text-xl font-semibold text-black">{resource.title}</h3>
+              <div className={`text-3xl mb-4 ${res.color}`}>
+                {res.icon}
               </div>
-              <p className="text-gray-700 mb-4">{resource.description}</p>
+              
+              <h3 className="text-2xl font-bold mb-3 leading-tight">{res.title}</h3>
+              <p className="text-[#093832]/70 mb-8 flex-grow leading-relaxed">
+                {res.description}
+              </p>
 
-              <a
-                href={resource.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center text-blue-600 hover:underline text-base font-medium"
-                download={resource.downloadable}
-              >
-                {resource.downloadable ? (
-                  <>
-                    <FiDownload className="mr-1" /> Download Toolkit
-                  </>
-                ) : (
-                  'Visit Resource'
-                )}
-              </a>
-
-              <span className="absolute top-4 right-4 bg-gray-200 text-xs px-3 py-1 rounded-full text-gray-600">
-                {resource.category}
-              </span>
-            </div>
-          ))
-        )}
+              <div className="flex justify-between items-center">
+                <a
+                  href={res.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 font-bold text-[#F1A6B4] hover:text-[#093832] transition-colors"
+                >
+                  {res.downloadable ? <><FiDownload /> Download</> : <><FiExternalLink /> Read More</>}
+                </a>
+                <span className="text-[10px] uppercase tracking-widest font-black opacity-30 bg-gray-100 px-3 py-1 rounded-full">
+                  {res.category}
+                </span>
+              </div>
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
+
+      {filteredResources.length === 0 && (
+        <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-20 text-xl opacity-50">
+          No resources found matching your search.
+        </motion.p>
+      )}
     </div>
   );
 }

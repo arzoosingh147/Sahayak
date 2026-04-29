@@ -1,7 +1,6 @@
-// src/pages/Emergency.jsx
-
 import React, { useState } from "react";
-import breathingGif from "../assets/breathing.gif"; // Add a calm breathing GIF to your assets
+import { motion, AnimatePresence } from "framer-motion";
+import breathingGif from "../assets/breathing.gif"; 
 
 const helplines = [
   {
@@ -14,8 +13,8 @@ const helplines = [
   {
     country: "USA",
     numbers: [
-      { name: "National Suicide Prevention Lifeline", phone: "988" },
-      { name: "SAMHSA", phone: "1-800-662-HELP (4357)" },
+      { name: "Crisis Lifeline", phone: "988" },
+      { name: "SAMHSA", phone: "1-800-662-4357" },
     ],
   },
 ];
@@ -24,77 +23,125 @@ const Emergency = () => {
   const [showModal, setShowModal] = useState(false);
 
   return (
-    <div className="min-h-auto bg-[#FFE4D7] text-[#444] pt-28 pb-16 px-12">
-      <h2 className="text-3xl md:text-4xl font-bold mb-6 text-center text-black">
-        Emergency Support
-      </h2>
+    <div className="min-h-screen bg-[#FFE4D7] text-[#093832] pt-32 pb-20 px-6">
+      <header className="max-w-4xl mx-auto text-center mb-12">
+        <h2 className="text-4xl md:text-5xl font-bold mb-4">Emergency Support</h2>
+        <p className="text-lg opacity-75 leading-relaxed">
+          If you are in immediate danger or need someone to talk to, please use the resources below.
+        </p>
+      </header>
 
-      <div className="grid gap-8 md:grid-cols-2">
-        {/* Panic Button */}
-        <div className="bg-white rounded-xl shadow-md p-6 border border-[#f8dcdc] flex flex-col items-center justify-center text-center">
-          <h3 className="text-xl font-semibold mb-4 text-black">
-            Feeling overwhelmed?
-          </h3>
+      <div className="max-w-6xl mx-auto grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        {/* Panic Button Card */}
+        <motion.div 
+          whileHover={{ y: -5 }}
+          className="bg-white rounded-[2.5rem] shadow-xl p-8 border-b-8 border-[#F92F60] flex flex-col items-center justify-center text-center lg:col-span-1"
+        >
+          <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-6">
+            <span className="text-3xl animate-pulse">🆘</span>
+          </div>
+          <h3 className="text-2xl font-bold mb-4">Feeling overwhelmed?</h3>
+          <p className="text-sm opacity-70 mb-8">Take a moment to ground yourself with a guided exercise.</p>
           <button
             onClick={() => setShowModal(true)}
-            className="px-6 py-3 bg-[#F92F60] text-white rounded-full font-semibold hover:bg-[#e44e4e] transition"
+            className="w-full py-4 bg-[#F92F60] text-white rounded-2xl font-bold shadow-lg hover:bg-[#e44e4e] transition-all"
           >
-            🆘 Panic Button
+            Start Grounding
           </button>
-        </div>
+        </motion.div>
 
         {/* Helpline Cards */}
         {helplines.map((region, index) => (
-          <div
+          <motion.div
             key={index}
-            className="bg-white rounded-xl shadow-md p-6 border border-[#f0eaea]"
+            whileHover={{ y: -5 }}
+            className="bg-white rounded-[2.5rem] shadow-xl p-8 border-t-8 border-[#F1A6B4]"
           >
-            <h3 className="text-xl font-semibold text-[#333] mb-4">
-              {region.country}
+            <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
+              <span className="text-lg">📍</span> {region.country}
             </h3>
-            <ul className="space-y-2">
+            <div className="space-y-4">
               {region.numbers.map((line, idx) => (
-                <li key={idx} className="text-md text-[#555]">
-                  <strong>{line.name}</strong>:{" "}
-                  <a href={`tel:${line.phone}`} className="text-[#F1A6B4]">
-                    {line.phone}
-                  </a>
-                </li>
+                <a 
+                  key={idx} 
+                  href={`tel:${line.phone}`}
+                  className="block p-4 bg-[#FFE4D7]/30 rounded-2xl border-2 border-transparent hover:border-[#F1A6B4] transition-all group"
+                >
+                  <p className="text-xs font-black uppercase tracking-widest opacity-40 mb-1 group-hover:opacity-100 transition-opacity">
+                    {line.name}
+                  </p>
+                  <p className="text-xl font-black text-[#093832]">{line.phone}</p>
+                </a>
               ))}
-            </ul>
-          </div>
+            </div>
+          </motion.div>
         ))}
       </div>
 
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex justify-center items-center">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full text-center relative">
-            <button
-              onClick={() => setShowModal(false)}
-              className="absolute top-2 right-3 text-[#999] hover:text-[#333] text-2xl"
-            >
-              &times;
-            </button>
-            <h3 className="text-xl font-semibold mb-4 text-[#F1A6B4]">
-              Breathe with me 🌬️
-            </h3>
+      {/* Grounding Modal */}
+<AnimatePresence>
+  {showModal && (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[100] bg-[#093832]/60 backdrop-blur-md flex justify-center items-center p-4 md:p-10"
+    >
+      <motion.div 
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md border-t-8 border-[#F1A6B4] flex flex-col max-h-[90vh] relative"
+      >
+        {/* Close Button */}
+        <button
+          onClick={() => setShowModal(false)}
+          className="absolute top-4 right-5 text-[#093832]/40 hover:text-[#093832] text-3xl font-bold z-10"
+        >
+          &times;
+        </button>
+        
+        {/* Scrollable Content Area */}
+        <div className="overflow-y-auto p-6 md:p-8 custom-scrollbar">
+          <h3 className="text-2xl font-bold mb-4 text-center">Breathe with Sahayak 🌬️</h3>
+          
+          <div className="bg-[#FFE4D7]/50 p-3 rounded-[1.5rem] mb-6">
             <img
               src={breathingGif}
               alt="Breathing exercise"
-              className="w-full rounded-lg mb-4"
+              className="w-full max-h-40 object-contain rounded-[1rem] mix-blend-multiply"
             />
-            <p className="text-[#555] mb-2">Try the 5-4-3-2-1 grounding technique:</p>
-            <ul className="text-sm text-[#666] space-y-1">
-              <li>🔵 5 things you can see</li>
-              <li>🟢 4 things you can touch</li>
-              <li>🔴 3 things you can hear</li>
-              <li>🟣 2 things you can smell</li>
-              <li>🟡 1 thing you can taste</li>
-            </ul>
           </div>
+
+          <div className="text-left space-y-3">
+            <p className="font-bold text-center mb-2 uppercase tracking-widest text-[10px] opacity-50">
+              Grounding Technique (5-4-3-2-1)
+            </p>
+            <div className="grid grid-cols-1 gap-2">
+               {[
+                 { c: "🔵", t: "5 things you can SEE" },
+                 { c: "🟢", t: "4 things you can TOUCH" },
+                 { c: "🔴", t: "3 things you can HEAR" },
+                 { c: "🟣", t: "2 things you can SMELL" },
+                 { c: "🟡", t: "1 thing you can TASTE" }
+               ].map((item, i) => (
+                 <div key={i} className="flex items-center gap-3 p-2.5 bg-gray-50 rounded-xl font-bold text-xs border border-gray-100">
+                   <span className="text-base">{item.c}</span> {item.t}
+                 </div>
+               ))}
+            </div>
+          </div>
+
+          <button 
+            onClick={() => setShowModal(false)}
+            className="mt-6 w-full py-3.5 bg-[#093832] text-white rounded-xl font-bold shadow-lg shadow-teal-900/20 active:scale-95 transition-all"
+          >
+            I Feel Better Now
+          </button>
         </div>
-      )}
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
     </div>
   );
 };

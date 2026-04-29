@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ChatBubbleOvalLeftIcon, XMarkIcon } from '@heroicons/react/24/solid';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ChatBubbleOvalLeftEllipsisIcon, XMarkIcon, PaperAirplaneIcon } from '@heroicons/react/24/solid';
 
 const supportiveResponses = [
   "I'm here for you. Remember, tough times don't last, but tough people do. 🌈",
   "Take a deep breath. You're doing the best you can, and that's enough. 🧘‍♀️",
   "Would you like a journaling prompt? ✍️ 'What are three things that made you smile today?'",
-  "Feeling overwhelmed? Try the 4-7-8 breathing technique. Inhale 4 sec, hold 7 sec, exhale 8 sec. 🌬️",
+  "Feeling overwhelmed? Try the 4-7-8 breathing technique. Inhale 4s, hold 7s, exhale 8s. 🌬️",
   "You're not alone. It's okay to ask for help. ❤️",
 ];
 
@@ -14,7 +15,7 @@ const distressKeywords = ["panic", "anxiety", "suicidal", "depressed", "help", "
 export default function ChatbotWidget() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([
-    { type: "bot", text: "Hi there! 🌟 I'm your companion. How are you feeling today?" }
+    { type: "bot", text: "Hi there! 🌟 I'm Sahayak, your companion. How is your heart today?" }
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -25,100 +26,119 @@ export default function ChatbotWidget() {
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isTyping]);
+    if (isOpen) scrollToBottom();
+  }, [messages, isTyping, isOpen]);
 
   const handleSend = () => {
     if (!input.trim()) return;
 
-    const newMessages = [...messages, { type: "user", text: input }];
-    setMessages(newMessages);
-    setInput("");
-    setIsTyping(true); // Start typing...
-
+    const userMessage = { type: "user", text: input };
+    setMessages(prev => [...prev, userMessage]);
     const lowerInput = input.toLowerCase();
+    setInput("");
+    setIsTyping(true);
+
     const distressDetected = distressKeywords.some(keyword => lowerInput.includes(keyword));
 
     setTimeout(() => {
-      setIsTyping(false); // Stop typing
+      setIsTyping(false);
       if (distressDetected) {
         setMessages(prev => [
           ...prev,
-          { type: "bot", text: "It sounds like you're going through a tough time. 💔 Please consider reaching out to a helpline: 📞 9152987821 (India Helpline). You matter." },
-          { type: "bot", text: "Here's a calming exercise: Breathe in... Breathe out... You are safe. 🌱" }
+          { type: "bot", text: "I'm listening, and I hear you. 💔 Please consider reaching out to a professional who can support you right now: 📞 9152987821. You matter so much." },
+          { type: "bot", text: "Try to name 3 things you can see right now. I'm right here with you. 🌱" }
         ]);
       } else {
         const randomResponse = supportiveResponses[Math.floor(Math.random() * supportiveResponses.length)];
         setMessages(prev => [...prev, { type: "bot", text: randomResponse }]);
       }
-    }, 2000); // Typing delay: 2 seconds
-  };
-
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
-      handleSend();
-    }
+    }, 1500);
   };
 
   return (
-    <div>
-      {/* Floating Chat Button */}
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 bg-[#F92F60] text-white p-4 rounded-full shadow-lg hover:bg-red-400 transition-all z-50"
-        >
-          <ChatBubbleOvalLeftIcon className="h-6 w-6" />
-        </button>
-      )}
+    <div className="relative z-[100]">
+      {/* Floating Toggle Button */}
+      <motion.button
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setIsOpen(!isOpen)}
+        className={`fixed bottom-6 right-6 p-4 rounded-full shadow-2xl transition-all duration-500 z-[101] ${
+          isOpen ? 'bg-[#093832] rotate-90' : 'bg-[#F92F60]'
+        }`}
+      >
+        {isOpen ? <XMarkIcon className="h-7 w-7 text-white" /> : <ChatBubbleOvalLeftEllipsisIcon className="h-7 w-7 text-white" />}
+      </motion.button>
 
       {/* Chat Window */}
-      {isOpen && (
-        <div className="fixed bottom-6 right-6 w-80 h-[450px] bg-white rounded-2xl shadow-xl flex flex-col overflow-hidden z-50">
-          <div className="flex items-center justify-between p-4 bg-[#F1A6B4] text-black">
-            <h2 className="text-lg font-semibold">Sahayak Chat</h2>
-            <button onClick={() => setIsOpen(false)}>
-              <XMarkIcon className="h-6 w-6" />
-            </button>
-          </div>
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
-            {messages.map((msg, idx) => (
-              <div key={idx} className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`px-3 py-2 rounded-xl max-w-[75%] ${msg.type === "user" ? "bg-[#F92F60] text-black" : "bg-[#F1A6B4] text-black"}`}>
-                  {msg.text}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 50, scale: 0.9 }}
+            className="fixed bottom-24 right-6 w-[350px] max-w-[90vw] h-[500px] max-h-[70vh] bg-white rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden border border-[#F1A6B4]/30 z-[100]"
+          >
+            {/* Header */}
+            <div className="p-6 bg-[#093832] text-white flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#F1A6B4] rounded-full flex items-center justify-center text-xl">✨</div>
+              <div>
+                <h2 className="font-bold text-sm">Sahayak Companion</h2>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                  <span className="text-[10px] uppercase tracking-widest opacity-60">Online</span>
                 </div>
               </div>
-            ))}
+            </div>
 
-            {/* Typing Animation */}
-            {isTyping && (
-              <div className="flex justify-start">
-                <div className="px-3 py-2 rounded-xl bg-[#F1A6B4] text-vlack max-w-[75%]">
-                  <span className="animate-pulse">Bot is typing...</span>
+            {/* Messages Area */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-[#FFE4D7]/10 custom-scrollbar">
+              {messages.map((msg, idx) => (
+                <motion.div 
+                  initial={{ opacity: 0, x: msg.type === "user" ? 20 : -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  key={idx} 
+                  className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}
+                >
+                  <div className={`px-4 py-3 rounded-2xl max-w-[85%] text-sm leading-relaxed shadow-sm ${
+                    msg.type === "user" 
+                      ? "bg-[#093832] text-white rounded-tr-none" 
+                      : "bg-[#F1A6B4] text-[#093832] rounded-tl-none font-medium"
+                  }`}>
+                    {msg.text}
+                  </div>
+                </motion.div>
+              ))}
+
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="px-4 py-2 rounded-2xl bg-gray-100 text-[#093832] text-xs font-bold animate-pulse">
+                    Sahayak is typing...
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+              <div ref={messagesEndRef} />
+            </div>
 
-            <div ref={messagesEndRef} />
-          </div>
-          <div className="p-3 border-t flex items-center gap-2">
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Type a message..."
-              className="flex-1 p-2 border rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#F1A6B4]"
-            />
-            <button
-              onClick={handleSend}
-              className="bg-[#F1A6B4] text-black px-4 py-2 rounded-full hover:bg-pink-500 transition-all text-sm"
-            >
-              Send
-            </button>
-          </div>
-        </div>
-      )}
+            {/* Input Area */}
+            <div className="p-4 bg-white border-t border-gray-100 flex items-center gap-2">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                placeholder="Talk to me..."
+                className="flex-1 p-3 bg-gray-50 border-none rounded-xl text-sm focus:ring-2 ring-[#F1A6B4] transition-all"
+              />
+              <button
+                onClick={handleSend}
+                className="p-3 bg-[#F1A6B4] text-[#093832] rounded-xl hover:bg-pink-400 transition-all shadow-md"
+              >
+                <PaperAirplaneIcon className="h-5 w-5" />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
