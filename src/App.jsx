@@ -14,6 +14,7 @@ import Mindfulness from "./pages/Mindfulness";
 import Dashboard from "./pages/Dashboard";
 import Challenges from './pages/Challenges';
 import ChatbotWidget from "./components/ChatbotWidget";
+import Auth from "./pages/Auth"; // 1. Import your new Auth page
 
 // Helper to reset scroll when clicking a link
 function ScrollToTop() {
@@ -40,6 +41,9 @@ export default function App() {
           <Route path="/mindfulness" element={<Mindfulness />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/challenges" element={<Challenges />} />
+          
+          {/* 2. This route connects the Navbar user icon to the Auth page */}
+          <Route path="/profile" element={<Auth />} /> 
         </Routes>
       </main>
 
