@@ -20,19 +20,19 @@ const Hero = () => {
     {
       title: "Mood Tracker",
       desc: "Track your feelings and patterns to understand yourself better.",
-      bgColor: "bg-[#FFF4E0]", // Softer yellow to match theme
+      bgColor: "bg-[#FFF4E0]", 
       delay: 0.5
     },
     {
       title: "Helpful Resources",
       desc: "Explore guides, tools, and tips curated by mental health experts.",
-      bgColor: "bg-[#E8F3F1]", // Soft teal tint
+      bgColor: "bg-[#E8F3F1]", 
       delay: 0.7
     },
     {
       title: "Community Support",
       desc: "Connect with others anonymously and find strength in shared stories.",
-      bgColor: "bg-[#F3E8FF]", // Soft lavender
+      bgColor: "bg-[#F3E8FF]", 
       delay: 0.9
     }
   ];

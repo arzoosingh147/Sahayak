@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { UserCircleIcon, EnvelopeIcon, LockClosedIcon, CheckCircleIcon } from "@heroicons/react/24/solid";
 
-const Auth = () => {
+// Destructured setLoginState prop from App.jsx to handle instant route evaluation
+const Auth = ({ setLoginState }) => {
+  const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [message, setMessage] = useState("");
   const [formData, setFormData] = useState({ name: "", email: "", password: "" });
@@ -21,6 +24,15 @@ const Auth = () => {
       if (savedUser && savedUser.email === formData.email && savedUser.password === formData.password) {
         setMessage(`Welcome back, ${savedUser.name}!`);
         localStorage.setItem("isLoggedIn", "true");
+        
+        // 1. Instantly update App.jsx global auth state
+        if (setLoginState) setLoginState(true);
+        
+        // Redirect to dashboard after 1.5 seconds so user sees the welcome popup
+        setTimeout(() => {
+          navigate('/dashboard'); 
+        }, 1500);
+
       } else {
         setMessage("Invalid credentials!");
       }
@@ -28,10 +40,18 @@ const Auth = () => {
       // Signup Logic
       localStorage.setItem("user", JSON.stringify(formData));
       setMessage("Account created successfully!");
-      setTimeout(() => setIsLogin(true), 2000); // Switch to login after success
+      localStorage.setItem("isLoggedIn", "true");
+      
+      // 2. Instantly update App.jsx global auth state for signup
+      if (setLoginState) setLoginState(true);
+      
+      // Redirect to dashboard after 1.5 seconds so user sees the success popup
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
     }
 
-    // Auto-hide message after 3 seconds
+    // Auto-hide popup message after 3 seconds
     setTimeout(() => setMessage(""), 3000);
   };
 

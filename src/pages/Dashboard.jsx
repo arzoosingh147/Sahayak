@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { 
   CalendarDaysIcon, 
@@ -8,19 +8,38 @@ import {
   ChartBarIcon 
 } from "@heroicons/react/24/outline";
 
-export default function Dashboard() {
+// Destructured setLoginState prop from App.jsx to toggle authentication globally
+export default function Dashboard({ setLoginState }) {
+  const navigate = useNavigate();
+  const [userName, setUserName] = useState("User");
   const [lastArticle, setLastArticle] = useState("");
   const [savedTools, setSavedTools] = useState([]);
   const [appointments, setAppointments] = useState([]);
   const [moodStats, setMoodStats] = useState({});
 
   useEffect(() => {
-    // This will eventually be: fetch('api/get_user_dashboard.php?user_id=' + sessionID)
+    // Retrieve actual user name from local storage
+    const savedUser = JSON.parse(localStorage.getItem("user"));
+    if (savedUser && savedUser.name) {
+      setUserName(savedUser.name);
+    }
+
     setLastArticle("Managing Anxiety: 5 Easy Steps");
     setSavedTools(["Deep Breathing Exercise", "Self-Compassion Worksheet"]);
     setAppointments([{ date: "2025-05-10", with: "Dr. Alia Khan" }]);
     setMoodStats({ happy: 4, sad: 2, stressed: 1, relaxed: 3 });
   }, []);
+
+  // Clear state and redirect cleanly on log out
+  const handleLogout = () => {
+    localStorage.removeItem("isLoggedIn");
+    
+    // 1. Instantly alert App.jsx that the user has logged out
+    if (setLoginState) setLoginState(false);
+    
+    // 2. Redirect back to login screen
+    navigate("/profile");
+  };
 
   return (
     <div className="min-h-screen pt-32 pb-20 px-6 bg-gradient-to-b from-white to-[#FFE4D7] text-[#093832]">
@@ -29,12 +48,22 @@ export default function Dashboard() {
         {/* Welcome Header */}
         <header className="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
           <div className="text-center md:text-left">
-            <h1 className="text-4xl font-bold mb-2">Welcome Back, <span className="text-[#F1A6B4]">User</span></h1>
+            {/* Displaying dynamic username */}
+            <h1 className="text-4xl font-bold mb-2">Welcome Back, <span className="text-[#F1A6B4]">{userName}</span></h1>
             <p className="opacity-70 font-medium">Your mental wellness journey is progressing beautifully.</p>
           </div>
-          <Link to="/tracker" className="bg-[#093832] text-white px-8 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-all">
-            Log Today's Mood
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link to="/tracker" className="bg-[#093832] text-white px-8 py-3 rounded-full font-bold shadow-lg hover:scale-105 transition-all">
+              Log Today's Mood
+            </Link>
+            {/* Logout button */}
+            <button 
+              onClick={handleLogout}
+              className="bg-red-500 text-white px-6 py-3 rounded-full font-bold shadow-lg hover:bg-red-600 transition-all"
+            >
+              Log Out
+            </button>
+          </div>
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
